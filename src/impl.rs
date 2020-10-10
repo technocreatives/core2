@@ -142,6 +142,30 @@ pub trait Read {
     /// ```
     fn read(&mut self, buf: &mut [u8]) -> Result<usize>;
 
+    /// Determines if this `Read`er can work with buffers of uninitialized
+    /// memory.
+    ///
+    /// The default implementation returns an initializer which will zero
+    /// buffers.
+    ///
+    /// If a `Read`er guarantees that it can work properly with uninitialized
+    /// memory, it should call [`Initializer::nop()`]. See the documentation for
+    /// [`Initializer`] for details.
+    ///
+    /// The behavior of this method must be independent of the state of the
+    /// `Read`er - the method only takes `&self` so that it can be used through
+    /// trait objects.
+    ///
+    /// # Safety
+    ///
+    /// This method is unsafe because a `Read`er could otherwise return a
+    /// non-zeroing `Initializer` from another `Read` type without an `unsafe`
+    /// block.
+    #[inline]
+    unsafe fn initializer(&self) -> Initializer {
+        Initializer::zeroing()
+    }
+
     /// Read the exact number of bytes required to fill `buf`.
     ///
     /// This function reads as many bytes as necessary to completely fill the
@@ -368,6 +392,45 @@ pub trait Read {
         Self: Sized,
     {
         Take { inner: self, limit }
+    }
+}
+
+/// A type used to conditionally initialize buffers passed to `Read` methods.
+#[derive(Debug)]
+pub struct Initializer(bool);
+
+impl Initializer {
+    /// Returns a new `Initializer` which will zero out buffers.
+    #[inline]
+    pub fn zeroing() -> Initializer {
+        Initializer(true)
+    }
+
+    /// Returns a new `Initializer` which will not zero out buffers.
+    ///
+    /// # Safety
+    ///
+    /// This may only be called by `Read`ers which guarantee that they will not
+    /// read from buffers passed to `Read` methods, and that the return value of
+    /// the method accurately reflects the number of bytes that have been
+    /// written to the head of the buffer.
+    #[inline]
+    pub unsafe fn nop() -> Initializer {
+        Initializer(false)
+    }
+
+    /// Indicates if a buffer should be initialized.
+    #[inline]
+    pub fn should_initialize(&self) -> bool {
+        self.0
+    }
+
+    /// Initializes a buffer if necessary.
+    #[inline]
+    pub fn initialize(&self, buf: &mut [u8]) {
+        if self.should_initialize() {
+            unsafe { core::ptr::write_bytes(buf.as_mut_ptr(), 0, buf.len()) }
+        }
     }
 }
 
@@ -942,6 +1005,15 @@ impl<T: Read, U: Read> Read for Chain<T, U> {
         }
         self.second.read(buf)
     }
+
+    unsafe fn initializer(&self) -> Initializer {
+        let initializer = self.first.initializer();
+        if initializer.should_initialize() {
+            initializer
+        } else {
+            self.second.initializer()
+        }
+    }
 }
 
 impl<T: BufRead, U: BufRead> BufRead for Chain<T, U> {
@@ -1123,6 +1195,10 @@ impl<T: Read> Read for Take<T> {
         let n = self.inner.read(&mut buf[..max])?;
         self.limit -= n as u64;
         Ok(n)
+    }
+
+    unsafe fn initializer(&self) -> Initializer {
+        self.inner.initializer()
     }
 }
 
