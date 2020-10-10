@@ -6,4 +6,6 @@ description = "The bare essentials of std::io for use in no_std. No alloc!"
 license = "Apache-2.0 OR MIT"
 edition = "2018"
 
-[dependencies]
+[features]
+default = ["std"]
+std = []
