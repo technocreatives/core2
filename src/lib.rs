@@ -15,8 +15,6 @@ pub use cursor::Cursor;
 pub use error::{Error, ErrorKind, Result};
 #[cfg(not(feature = "std"))]
 pub use r#impl::{BufRead, Bytes, Chain, Read, Seek, SeekFrom, Take, Write};
-#[cfg(not(feature = "std"))]
-pub use util::copy;
 
 #[cfg(feature = "std")]
 pub use std::io::{
@@ -26,3 +24,4 @@ pub use std::io::{
 
 // Use this crate's implementation on both std and no_std
 pub use buffered::{BufReader, BufWriter, LineWriter};
+pub use util::copy;
