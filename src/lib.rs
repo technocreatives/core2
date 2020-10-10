@@ -1,6 +1,7 @@
 #![feature(min_const_generics)]
 #![feature(maybe_uninit_ref)]
 #![cfg_attr(not(feature = "std"), no_std)]
+#![cfg_attr(feature = "std", feature(read_initializer))]
 
 mod buffered;
 mod cursor;
@@ -18,7 +19,7 @@ pub use r#impl::{BufRead, Bytes, Chain, Read, Seek, SeekFrom, Take, Write};
 
 #[cfg(feature = "std")]
 pub use std::io::{
-    copy, BufRead, Bytes, Chain, Cursor, Error, ErrorKind, Read, Result, Seek, SeekFrom, Take,
+    BufRead, Bytes, Chain, Cursor, Error, ErrorKind, Read, Result, Seek, SeekFrom, Take,
     Write,
 };
 
