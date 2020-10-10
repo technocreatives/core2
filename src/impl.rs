@@ -71,7 +71,6 @@ use core::{cmp, fmt, slice};
 /// [`std::io`]: self
 /// [`File`]: crate::fs::File
 /// [slice]: ../../std/primitive.slice.html
-#[doc(spotlight)]
 pub trait Read {
     /// Pull some bytes from this source into the specified buffer, returning
     /// how many bytes were read.
@@ -417,7 +416,6 @@ pub trait Read {
 /// `write` in a loop until its entire input has been written.
 ///
 /// [`write_all`]: Write::write_all
-#[doc(spotlight)]
 pub trait Write {
     /// Write a buffer into this writer, returning how many bytes were written.
     ///
