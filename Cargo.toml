@@ -1,6 +1,6 @@
 [package]
 name = "bare-io"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Brendan Molloy <brendan@bbqsrc.net>"]
 description = "The bare essentials of std::io for use in no_std. No alloc!"
 license = "Apache-2.0 OR MIT"
@@ -9,8 +9,8 @@ repository = "https://github.com/bbqsrc/bare-io"
 categories = ["no-std"]
 
 [dependencies]
-memchr = { version = "2", default-features = false, optional = true }
+memchr = { version = "2", default-features = false }
 
 [features]
-default = ["memchr"]
+default = []
 std = []
