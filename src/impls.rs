@@ -1,5 +1,5 @@
 use crate::error::{Error, ErrorKind, Result};
-use crate::r#impl::{BufRead, Read, Seek, SeekFrom, Write};
+use crate::traits::{BufRead, Read, Seek, SeekFrom, Write};
 use core::{cmp, fmt, mem};
 
 // =============================================================================
