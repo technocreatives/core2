@@ -20,17 +20,17 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: test
-          args: --features nightly
+          args: --tests --features nightly
       - name: Run tests (std)
         uses: actions-rs/cargo@v1
         with:
           command: test
-          args: --features std-nightly
+          args: --tests --features std-nightly
       - name: Run tests (alloc)
         uses: actions-rs/cargo@v1
         with:
           command: test
-          args: --features nightly,alloc
+          args: --tests --features nightly,alloc
   test-stable:
     runs-on: ${{ matrix.os }}
     strategy:
