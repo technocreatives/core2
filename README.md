@@ -3,8 +3,8 @@
 [![Actions Status](https://github.com/bbqsrc/bare-io/workflows/CI/badge.svg)](https://github.com/bbqsrc/bare-io/actions)
 [![Documentation](https://docs.rs/bare-io/badge.svg)](https://docs.rs/bare-io)
 
-A 'fork' of Rust's `std::io` module for `no_std` environments, with the added benefit of not needing `alloc`.
-Ever wanted a `Cursor` in `no_std`? Well now you can have it.
+Ever wanted a `Cursor` in `no_std`? Well now you can have it. A 'fork' of Rust's `std::io` module for `no_std` environments,
+with the added benefit of not needing `alloc`.
 
 The goal of this crate is to provide a stable interface for building I/O trait functionality in
 `no_std` environments. The current code corresponds to the most recent stable API of Rust 1.47.0. 
