@@ -10,6 +10,9 @@ mod r#impl;
 mod impls;
 mod util;
 
+#[cfg(feature = "alloc")]
+extern crate alloc;
+
 #[cfg(not(feature = "std"))]
 pub use cursor::Cursor;
 #[cfg(not(feature = "std"))]

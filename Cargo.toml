@@ -13,4 +13,5 @@ memchr = { version = "2", default-features = false }
 
 [features]
 default = []
-std = []
+alloc = []
+std = ["alloc"]
