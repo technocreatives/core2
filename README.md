@@ -52,6 +52,7 @@ All of the below are works in progress, but should help with demonstrating how t
 - [byteorder_bare-io](https://github.com/bbqsrc/byteorder): personal fork of `byteorder` crate
 - [zstd-rs](https://github.com/bbqsrc/zstd-rs): personal fork of `zstd` crate to demonstrate `bare-io` in a more complex setting
 - [comde](https://github.com/bbqsrc/comde): do compression/decompression similarly to how one might use `serde`
+- [pathtrie](https://github.com/bbqsrc/pathtrie): a prefix trie optimised for paths and URLs, using an FST for fast lookups in no_std.
 
 ## License
 
