@@ -2,6 +2,7 @@
 
 [![Actions Status](https://github.com/bbqsrc/bare-io/workflows/CI/badge.svg)](https://github.com/bbqsrc/bare-io/actions)
 [![Documentation](https://docs.rs/bare-io/badge.svg)](https://docs.rs/bare-io)
+![Minimum Supported Rust Version (MSRV)](https://img.shields.io/badge/rust-v1.47.0+-blue)
 
 Ever wanted a `Cursor` in `no_std`? Well now you can have it. A 'fork' of Rust's `std::io` module for `no_std` environments,
 with the added benefit of not needing `alloc`.
