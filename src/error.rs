@@ -77,7 +77,7 @@ struct Custom {
 /// [`io::Error`]: Error
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 // #[allow(deprecated)]
-#[non_exhaustive]
+#[cfg_attr(not(feature = "ancient"), non_exhaustive)]
 pub enum ErrorKind {
     /// An entity was not found, often a file.
     NotFound,

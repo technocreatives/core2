@@ -17,6 +17,7 @@ alloc = []
 std = ["alloc"]
 nightly = []
 std-nightly = ["std", "nightly"]
+ancient = []
 
 [package.metadata.docs.rs]
 features = ["nightly"]
