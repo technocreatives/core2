@@ -50,6 +50,8 @@ pub struct Error {
     repr: Repr,
 }
 
+impl crate::error::Error for Error {}
+
 impl fmt::Debug for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         fmt::Debug::fmt(&self.repr, f)
