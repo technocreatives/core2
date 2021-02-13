@@ -1,6 +1,6 @@
 //! Buffering wrappers for I/O traits
 
-use crate::{BufRead, Error, ErrorKind, Read, Result, Seek, SeekFrom, Write};
+use crate::io::{BufRead, Error, ErrorKind, Read, Result, Seek, SeekFrom, Write};
 use core::{cmp, fmt};
 
 /// The `BufReader<R, S>` struct adds buffering to any reader.

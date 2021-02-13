@@ -1,4 +1,4 @@
-use crate::{BufRead, Error, ErrorKind, Read, Result, Seek, SeekFrom, Write};
+use super::{BufRead, Error, ErrorKind, Read, Result, Seek, SeekFrom, Write};
 use core::cmp;
 
 /// A `Cursor` wraps an in-memory buffer and provides it with a

@@ -2,13 +2,13 @@
 use core::mem::MaybeUninit;
 
 #[cfg(feature = "nightly")]
-use crate::{ErrorKind, Read, Write};
+use crate::io::{ErrorKind, Read, Write};
 
 #[cfg(feature = "nightly")]
 pub fn copy<R: ?Sized, W: ?Sized, const S: usize>(
     reader: &mut R,
     writer: &mut W,
-) -> crate::Result<u64>
+) -> crate::io::Result<u64>
 where
     R: Read,
     W: Write,

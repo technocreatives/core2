@@ -1,4 +1,4 @@
-use bare_io::{self as io, BufRead, Cursor, Read, Write};
+use core2::io::{self as io, BufRead, Cursor, Read, Write};
 use core::cmp;
 
 // #[test]
