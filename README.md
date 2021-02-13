@@ -1,36 +1,37 @@
-# bare-io
+# core2
 
-[![Actions Status](https://github.com/bbqsrc/bare-io/workflows/CI/badge.svg)](https://github.com/bbqsrc/bare-io/actions)
-[![Documentation](https://docs.rs/bare-io/badge.svg)](https://docs.rs/bare-io)
+**NOTE: This repository was recently renamed from bare-io. `bare_io` is now `core2::io`.**
+
+[![Actions Status](https://github.com/bbqsrc/core2/workflows/CI/badge.svg)](https://github.com/bbqsrc/core2/actions)
+[![Documentation](https://docs.rs/core2/badge.svg)](https://docs.rs/core2)
 ![Minimum Supported Rust Version (MSRV)](https://img.shields.io/badge/rust-v1.47.0+-blue)
 
-Ever wanted a `Cursor` in `no_std`? Well now you can have it. A 'fork' of Rust's `std::io` module for `no_std` environments,
-with the added benefit of not needing `alloc`.
+Ever wanted a `Cursor` or the `Error` trait in `no_std`? Well now you can have it. A 'fork' of Rust's `std` modules for `no_std` environments, with the added benefit of optionally taking advantage of `alloc`.
 
-The goal of this crate is to provide a stable interface for building I/O trait functionality in
+The goal of this crate is to provide a stable interface for building I/O and error trait functionality in
 `no_std` environments. The current code corresponds to the most recent stable API of Rust 1.47.0. 
 It is also a goal to achieve a true alloc-less experience, with opt-in alloc support.
 
 This crate works on `stable` with some limitations in functionality, and `nightly` without limitations by adding
 the relevant feature flag.
 
-This crate is `no_std` by default — you must opt into enabling `std` if required.
+This crate is `std` by default -- use no default features to get `no_std` mode.
 
 ## Usage
 
 ```toml
 [dependencies]
-bare-io = "0.2"
+core2 = "0.3"
 ```
 
-Add the crate, use the things you would usually want from `std::io`, but instead from `bare_io`.
+Add the crate, use the things you would usually want from `std::io`, but instead from `core2::io`, and
+use `core2::error::Error` in place of `std::error::Error`.
 
 ### Features
 
 - **std**: enables `std` pass-throughs for the polyfilled types, but allows accessing the new types
 - **alloc**: enable aspects of the `Read` and `Write` traits that require `alloc` support (WIP)
 - **nightly**: enables **nightly**-only features, such as `BufReader` and `BufWriter` with const generic buffers.
-- **nightly-std**: enables `std` with **nightly**-only features
 
 ### Differences to `std::io`
 
@@ -49,11 +50,14 @@ Other than items perhaps being entirely missing or certain functions unavailable
 
 All of the below are works in progress, but should help with demonstrating how to use this crate.
 
+- [thiserror_core2](https://github.com/bbqsrc/thiserror-core2): fork of `thiserror` using the `core2::error::Error` trait.
+<!-- 
 - [fastvlq](https://github.com/bbqsrc/fastvlq): variable-length `u64` type with no-std reader support with `bare-io`
 - [byteorder_bare-io](https://github.com/bbqsrc/byteorder): personal fork of `byteorder` crate
 - [zstd-rs](https://github.com/bbqsrc/zstd-rs): personal fork of `zstd` crate to demonstrate `bare-io` in a more complex setting
 - [comde](https://github.com/bbqsrc/comde): do compression/decompression similarly to how one might use `serde`
 - [pathtrie](https://github.com/bbqsrc/pathtrie): a prefix trie optimised for paths and URLs, using an FST for fast lookups in no_std.
+-->
 
 ## License
 
