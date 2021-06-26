@@ -22,9 +22,9 @@ use core::cmp;
 /// [bytes]: crate::slice
 /// [`File`]: crate::fs::File
 ///
-/// ```no_run
+/// ```
 /// use std::io::prelude::*;
-/// use std::io::{self, SeekFrom};
+/// use core2::io::{self, Seek, SeekFrom, Write};
 /// use std::fs::File;
 ///
 /// // a library function we've written
@@ -39,12 +39,13 @@ use core::cmp;
 ///     Ok(())
 /// }
 ///
+/// # #[cfg(feature = "std")]
 /// # fn foo() -> io::Result<()> {
 /// // Here's some code that uses this library function.
 /// //
 /// // We might want to use a BufReader here for efficiency, but let's
 /// // keep this example focused.
-/// let mut file = File::create("foo.txt")?;
+/// let mut file = File::create("foo.txt").map_err(|e| io::Error::from(e))?;
 ///
 /// write_ten_bytes_at_end(&mut file)?;
 /// # Ok(())
@@ -55,7 +56,7 @@ use core::cmp;
 /// fn test_writes_bytes() {
 ///     // setting up a real File is much slower than an in-memory buffer,
 ///     // let's use a cursor instead
-///     use std::io::Cursor;
+///     use core2::io::Cursor;
 ///     let mut buff = Cursor::new(vec![0; 15]);
 ///
 ///     write_ten_bytes_at_end(&mut buff).unwrap();
@@ -79,7 +80,7 @@ impl<T> Cursor<T> {
     /// # Examples
     ///
     /// ```
-    /// use std::io::Cursor;
+    /// use core2::io::Cursor;
     ///
     /// let buff = Cursor::new(Vec::new());
     /// # fn force_inference(_: &Cursor<Vec<u8>>) {}
@@ -94,7 +95,7 @@ impl<T> Cursor<T> {
     /// # Examples
     ///
     /// ```
-    /// use std::io::Cursor;
+    /// use core2::io::Cursor;
     ///
     /// let buff = Cursor::new(Vec::new());
     /// # fn force_inference(_: &Cursor<Vec<u8>>) {}
@@ -111,7 +112,7 @@ impl<T> Cursor<T> {
     /// # Examples
     ///
     /// ```
-    /// use std::io::Cursor;
+    /// use core2::io::Cursor;
     ///
     /// let buff = Cursor::new(Vec::new());
     /// # fn force_inference(_: &Cursor<Vec<u8>>) {}
@@ -131,7 +132,7 @@ impl<T> Cursor<T> {
     /// # Examples
     ///
     /// ```
-    /// use std::io::Cursor;
+    /// use core2::io::Cursor;
     ///
     /// let mut buff = Cursor::new(Vec::new());
     /// # fn force_inference(_: &Cursor<Vec<u8>>) {}
@@ -148,9 +149,8 @@ impl<T> Cursor<T> {
     /// # Examples
     ///
     /// ```
-    /// use std::io::Cursor;
+    /// use core2::io::{Cursor, Seek, SeekFrom};
     /// use std::io::prelude::*;
-    /// use std::io::SeekFrom;
     ///
     /// let mut buff = Cursor::new(vec![1, 2, 3, 4, 5]);
     ///
@@ -171,7 +171,7 @@ impl<T> Cursor<T> {
     /// # Examples
     ///
     /// ```
-    /// use std::io::Cursor;
+    /// use core2::io::Cursor;
     ///
     /// let mut buff = Cursor::new(vec![1, 2, 3, 4, 5]);
     ///
