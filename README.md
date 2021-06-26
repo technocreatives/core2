@@ -1,7 +1,5 @@
 # core2
 
-**NOTE: This repository was recently renamed from bare-io. `bare_io` is now `core2::io`.**
-
 [![Actions Status](https://github.com/bbqsrc/core2/workflows/CI/badge.svg)](https://github.com/bbqsrc/core2/actions)
 [![Documentation](https://docs.rs/core2/badge.svg)](https://docs.rs/core2)
 ![Minimum Supported Rust Version (MSRV)](https://img.shields.io/badge/rust-v1.47.0+-blue)
@@ -51,13 +49,6 @@ Other than items perhaps being entirely missing or certain functions unavailable
 All of the below are works in progress, but should help with demonstrating how to use this crate.
 
 - [thiserror_core2](https://github.com/bbqsrc/thiserror-core2): fork of `thiserror` using the `core2::error::Error` trait.
-<!-- 
-- [fastvlq](https://github.com/bbqsrc/fastvlq): variable-length `u64` type with no-std reader support with `bare-io`
-- [byteorder_bare-io](https://github.com/bbqsrc/byteorder): personal fork of `byteorder` crate
-- [zstd-rs](https://github.com/bbqsrc/zstd-rs): personal fork of `zstd` crate to demonstrate `bare-io` in a more complex setting
-- [comde](https://github.com/bbqsrc/comde): do compression/decompression similarly to how one might use `serde`
-- [pathtrie](https://github.com/bbqsrc/pathtrie): a prefix trie optimised for paths and URLs, using an FST for fast lookups in no_std.
--->
 
 ## License
 
