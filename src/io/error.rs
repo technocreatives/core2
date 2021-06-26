@@ -24,12 +24,13 @@ use core::{convert::From, fmt, result};
 /// A convenience function that bubbles an `io::Result` to its caller:
 ///
 /// ```
-/// use std::io;
+/// use core2::io;
 ///
+/// #[cfg(feature = "std")]
 /// fn get_string() -> io::Result<String> {
 ///     let mut buffer = String::new();
 ///
-///     io::stdin().read_line(&mut buffer)?;
+///     std::io::stdin().read_line(&mut buffer).map_err(|e| io::Error::from(e))?;
 ///
 ///     Ok(buffer)
 /// }
@@ -150,6 +151,9 @@ pub enum ErrorKind {
     /// particular number of bytes but only a smaller number of bytes could be
     /// read.
     UnexpectedEof,
+
+    /// Unsupported I/O error
+    Unsupported,
 }
 
 impl ErrorKind {
@@ -173,6 +177,48 @@ impl ErrorKind {
             ErrorKind::Interrupted => "operation interrupted",
             ErrorKind::Other => "other os error",
             ErrorKind::UnexpectedEof => "unexpected end of file",
+            ErrorKind::Unsupported => "unsupported I/O error",
+        }
+    }
+}
+
+#[cfg(feature = "std")]
+impl From<std::io::ErrorKind> for ErrorKind {
+    /// Converts an [`std::io::ErrorKind`] into an [`ErrorKind`].
+    ///
+    /// This conversion allocates a new error with a simple representation of error kind.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use core2::io::{Error, ErrorKind};
+    ///
+    /// let not_found = ErrorKind::from(std::io::ErrorKind::NotFound);
+    /// let err: Error = not_found.into();
+    /// assert_eq!("entity not found", format!("{}", err));
+    /// ```
+    fn from(k: std::io::ErrorKind) -> Self {
+        match k {
+            std::io::ErrorKind::NotFound => ErrorKind::NotFound,
+            std::io::ErrorKind::PermissionDenied => ErrorKind::PermissionDenied,
+            std::io::ErrorKind::ConnectionRefused => ErrorKind::ConnectionRefused,
+            std::io::ErrorKind::ConnectionReset => ErrorKind::ConnectionReset,
+            std::io::ErrorKind::ConnectionAborted => ErrorKind::ConnectionAborted,
+            std::io::ErrorKind::NotConnected => ErrorKind::NotConnected,
+            std::io::ErrorKind::AddrInUse => ErrorKind::AddrInUse,
+            std::io::ErrorKind::AddrNotAvailable => ErrorKind::AddrNotAvailable,
+            std::io::ErrorKind::BrokenPipe => ErrorKind::BrokenPipe,
+            std::io::ErrorKind::AlreadyExists => ErrorKind::AlreadyExists,
+            std::io::ErrorKind::WouldBlock => ErrorKind::WouldBlock,
+            std::io::ErrorKind::InvalidInput => ErrorKind::InvalidInput,
+            std::io::ErrorKind::InvalidData => ErrorKind::InvalidData,
+            std::io::ErrorKind::TimedOut => ErrorKind::TimedOut,
+            std::io::ErrorKind::WriteZero => ErrorKind::WriteZero,
+            std::io::ErrorKind::Interrupted => ErrorKind::Interrupted,
+            std::io::ErrorKind::Other => ErrorKind::Other,
+            std::io::ErrorKind::UnexpectedEof => ErrorKind::UnexpectedEof,
+            std::io::ErrorKind::Unsupported => ErrorKind::Unsupported,
+            _ => ErrorKind::Unsupported,
         }
     }
 }
@@ -187,7 +233,7 @@ impl From<ErrorKind> for Error {
     /// # Examples
     ///
     /// ```
-    /// use std::io::{Error, ErrorKind};
+    /// use core2::io::{Error, ErrorKind};
     ///
     /// let not_found = ErrorKind::NotFound;
     /// let error = Error::from(not_found);
@@ -198,6 +244,27 @@ impl From<ErrorKind> for Error {
         Error {
             repr: Repr::Simple(kind),
         }
+    }
+}
+
+#[cfg(feature = "std")]
+impl From<std::io::Error> for Error {
+    /// Converts an [`std::io::ErrorKind`] into an [`Error`].
+    ///
+    /// This conversion allocates a new error with a simple representation of error kind.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use core2::io::{Error, ErrorKind};
+    ///
+    /// let not_found = std::io::Error::from(std::io::ErrorKind::NotFound);
+    /// let error = Error::from(not_found);
+    /// assert_eq!("entity not found", format!("{}", error));
+    /// ```
+    #[inline]
+    fn from(err: std::io::Error) -> Self {
+        Self::from(ErrorKind::from(err.kind()))
     }
 }
 
@@ -212,13 +279,13 @@ impl Error {
     /// # Examples
     ///
     /// ```
-    /// use std::io::{Error, ErrorKind};
+    /// use core2::io::{Error, ErrorKind};
     ///
     /// // errors can be created from strings
     /// let custom_error = Error::new(ErrorKind::Other, "oh no!");
     ///
     /// // errors can also be created from other errors
-    /// let custom_error2 = Error::new(ErrorKind::Interrupted, custom_error);
+    /// let custom_error2 = Error::new(ErrorKind::Interrupted, custom_error.into_inner().unwrap());
     /// ```
     pub fn new(kind: ErrorKind, error: &'static str) -> Error {
         Self::_new(kind, error.into())
@@ -240,7 +307,7 @@ impl Error {
     /// # Examples
     ///
     /// ```
-    /// use std::io::{Error, ErrorKind};
+    /// use core2::io::{Error, ErrorKind};
     ///
     /// fn print_error(err: &Error) {
     ///     if let Some(inner_err) = err.get_ref() {
@@ -250,17 +317,30 @@ impl Error {
     ///     }
     /// }
     ///
-    /// fn main() {
+    /// #[cfg(feature = "std")]
+    /// fn emit_error() {
     ///     // Will print "No inner error".
-    ///     print_error(&Error::last_os_error());
+    ///     print_error(&Error::from(std::io::Error::last_os_error()));
     ///     // Will print "Inner error: ...".
     ///     print_error(&Error::new(ErrorKind::Other, "oh no!"));
+    /// }
+    ///
+    /// #[cfg(not(feature = "std"))]
+    /// fn emit_error() {
+    ///     // Will print "No inner error".
+    ///     print_error(&ErrorKind::Other.into());
+    ///     // Will print "Inner error: ...".
+    ///     print_error(&Error::new(ErrorKind::Other, "oh no!"));
+    /// }
+    ///
+    /// fn main() {
+    ///     emit_error();
     /// }
     /// ```
     pub fn get_ref(&self) -> Option<&&'static str> {
         match self.repr {
             Repr::Simple(..) => None,
-            Repr::Custom(ref c) => Some(&c.error),
+            Repr::Custom(ref c) => Some(c.error),
         }
     }
 
@@ -274,7 +354,7 @@ impl Error {
     /// # Examples
     ///
     /// ```
-    /// use std::io::{Error, ErrorKind};
+    /// use core2::io::{Error, ErrorKind};
     ///
     /// fn print_error(err: Error) {
     ///     if let Some(inner_err) = err.into_inner() {
@@ -284,11 +364,24 @@ impl Error {
     ///     }
     /// }
     ///
-    /// fn main() {
+    /// #[cfg(feature = "std")]
+    /// fn emit_error() {
     ///     // Will print "No inner error".
-    ///     print_error(Error::last_os_error());
+    ///     print_error(std::io::Error::last_os_error().into());
     ///     // Will print "Inner error: ...".
     ///     print_error(Error::new(ErrorKind::Other, "oh no!"));
+    /// }
+    ///
+    /// #[cfg(not(feature = "std"))]
+    /// fn emit_error() {
+    ///     // Will print "No inner error".
+    ///     print_error(ErrorKind::Other.into());
+    ///     // Will print "Inner error: ...".
+    ///     print_error(Error::new(ErrorKind::Other, "oh no!"));
+    /// }
+    ///
+    /// fn main() {
+    ///     emit_error();
     /// }
     /// ```
     pub fn into_inner(self) -> Option<&'static str> {
@@ -303,17 +396,30 @@ impl Error {
     /// # Examples
     ///
     /// ```
-    /// use std::io::{Error, ErrorKind};
+    /// use core2::io::{Error, ErrorKind};
     ///
     /// fn print_error(err: Error) {
     ///     println!("{:?}", err.kind());
     /// }
     ///
-    /// fn main() {
+    /// #[cfg(feature = "std")]
+    /// fn emit_error() {
     ///     // Will print "Other".
-    ///     print_error(Error::last_os_error());
+    ///     print_error(std::io::Error::last_os_error().into());
     ///     // Will print "AddrInUse".
     ///     print_error(Error::new(ErrorKind::AddrInUse, "oh no!"));
+    /// }
+    ///
+    /// #[cfg(not(feature = "std"))]
+    /// fn emit_error() {
+    ///     // Will print "Other".
+    ///     print_error(ErrorKind::Other.into());
+    ///     // Will print "AddrInUse".
+    ///     print_error(Error::new(ErrorKind::AddrInUse, "oh no!"));
+    /// }
+    ///
+    /// fn main() {
+    ///     emit_error();
     /// }
     /// ```
     pub fn kind(&self) -> ErrorKind {
