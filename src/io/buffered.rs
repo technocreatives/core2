@@ -29,7 +29,7 @@ use core::{cmp, fmt};
 ///
 /// ```no_run
 /// use std::prelude::*;
-/// use bare_io::BufReader;
+/// use core2::io::BufReader;
 /// use std::fs::File;
 ///
 /// fn main() -> core::result::Result<()> {
@@ -56,7 +56,7 @@ impl<R: Read, const S: usize> BufReader<R, S> {
     /// # Examples
     ///
     /// ```no_run
-    /// use bare_io::BufReader;
+    /// use core2::io::BufReader;
     /// use std::fs::File;
     ///
     /// fn main() -> core::result::Result<()> {
@@ -83,7 +83,7 @@ impl<R, const S: usize> BufReader<R, S> {
     /// # Examples
     ///
     /// ```no_run
-    /// use bare_io::BufReader;
+    /// use core2::io::BufReader;
     /// use std::fs::File;
     ///
     /// fn main() -> core::result::Result<()> {
@@ -105,7 +105,7 @@ impl<R, const S: usize> BufReader<R, S> {
     /// # Examples
     ///
     /// ```no_run
-    /// use bare_io::BufReader;
+    /// use core2::io::BufReader;
     /// use std::fs::File;
     ///
     /// fn main() -> core::result::Result<()> {
@@ -177,7 +177,7 @@ impl<R, const S: usize> BufReader<R, S> {
     /// # Examples
     ///
     /// ```no_run
-    /// use bare_io::BufReader;
+    /// use core2::io::BufReader;
     /// use std::fs::File;
     ///
     /// fn main() -> core::result::Result<()> {
@@ -339,7 +339,7 @@ impl<R: Seek, const S: usize> Seek for BufReader<R, S> {
 ///
 /// ```no_run
 /// use std::prelude::*;
-/// use bare_io::BufWriter;
+/// use core2::io::BufWriter;
 /// use std::net::TcpStream;
 ///
 /// let mut stream = BufWriter::new(TcpStream::connect("127.0.0.1:34254").unwrap());
@@ -374,7 +374,7 @@ pub struct BufWriter<W: Write, const S: usize> {
 /// # Examples
 ///
 /// ```no_run
-/// use bare_io::BufWriter;
+/// use core2::io::BufWriter;
 /// use std::net::TcpStream;
 ///
 /// let mut stream = BufWriter::new(TcpStream::connect("127.0.0.1:34254").unwrap());
@@ -404,7 +404,7 @@ where
     /// # Examples
     ///
     /// ```no_run
-    /// use bare_io::BufWriter;
+    /// use core2::io::BufWriter;
     /// use std::net::TcpStream;
     ///
     /// let mut buffer = BufWriter::new(TcpStream::connect("127.0.0.1:34254").unwrap());
@@ -503,7 +503,7 @@ where
     /// # Examples
     ///
     /// ```no_run
-    /// use bare_io::BufWriter;
+    /// use core2::io::BufWriter;
     /// use std::net::TcpStream;
     ///
     /// let mut buffer = BufWriter::new(TcpStream::connect("127.0.0.1:34254").unwrap());
@@ -522,7 +522,7 @@ where
     /// # Examples
     ///
     /// ```no_run
-    /// use bare_io::BufWriter;
+    /// use core2::io::BufWriter;
     /// use std::net::TcpStream;
     ///
     /// let mut buffer = BufWriter::new(TcpStream::connect("127.0.0.1:34254").unwrap());
@@ -539,7 +539,7 @@ where
     /// # Examples
     ///
     /// ```no_run
-    /// use bare_io::BufWriter;
+    /// use core2::io::BufWriter;
     /// use std::net::TcpStream;
     ///
     /// let buf_writer = BufWriter::new(TcpStream::connect("127.0.0.1:34254").unwrap());
@@ -556,7 +556,7 @@ where
     /// # Examples
     ///
     /// ```no_run
-    /// use bare_io::BufWriter;
+    /// use core2::io::BufWriter;
     /// use std::net::TcpStream;
     ///
     /// let buf_writer = BufWriter::new(TcpStream::connect("127.0.0.1:34254").unwrap());
@@ -581,7 +581,7 @@ where
     /// # Examples
     ///
     /// ```no_run
-    /// use bare_io::BufWriter;
+    /// use core2::io::BufWriter;
     /// use std::net::TcpStream;
     ///
     /// let mut buffer = BufWriter::new(TcpStream::connect("127.0.0.1:34254").unwrap());
@@ -679,7 +679,7 @@ impl<W> IntoInnerError<W> {
     /// # Examples
     ///
     /// ```no_run
-    /// use bare_io::BufWriter;
+    /// use core2::io::BufWriter;
     /// use std::net::TcpStream;
     ///
     /// let mut stream = BufWriter::new(TcpStream::connect("127.0.0.1:34254").unwrap());
@@ -712,7 +712,7 @@ impl<W> IntoInnerError<W> {
     /// # Examples
     ///
     /// ```no_run
-    /// use bare_io::BufWriter;
+    /// use core2::io::BufWriter;
     /// use std::net::TcpStream;
     ///
     /// let mut stream = BufWriter::new(TcpStream::connect("127.0.0.1:34254").unwrap());
@@ -942,7 +942,7 @@ impl<'a, W: Write, const S: usize> Write for LineWriterShim<'a, W, S> {
 /// ```no_run
 /// use std::fs::{self, File};
 /// use std::prelude::*;
-/// use bare_io::LineWriter;
+/// use core2::io::LineWriter;
 ///
 /// fn main() -> core::result::Result<()> {
 ///     let road_not_taken = b"I shall be telling this with a sigh
@@ -992,7 +992,7 @@ impl<W: Write, const S: usize> LineWriter<W, S> {
     ///
     /// ```no_run
     /// use std::fs::File;
-    /// use bare_io::LineWriter;
+    /// use core2::io::LineWriter;
     ///
     /// fn main() -> core::result::Result<()> {
     ///     let file = File::create("poem.txt")?;
@@ -1012,7 +1012,7 @@ impl<W: Write, const S: usize> LineWriter<W, S> {
     ///
     /// ```no_run
     /// use std::fs::File;
-    /// use bare_io::LineWriter;
+    /// use core2::io::LineWriter;
     ///
     /// fn main() -> core::result::Result<()> {
     ///     let file = File::create("poem.txt")?;
@@ -1035,7 +1035,7 @@ impl<W: Write, const S: usize> LineWriter<W, S> {
     ///
     /// ```no_run
     /// use std::fs::File;
-    /// use bare_io::LineWriter;
+    /// use core2::io::LineWriter;
     ///
     /// fn main() -> core::result::Result<()> {
     ///     let file = File::create("poem.txt")?;
@@ -1062,7 +1062,7 @@ impl<W: Write, const S: usize> LineWriter<W, S> {
     ///
     /// ```no_run
     /// use std::fs::File;
-    /// use bare_io::LineWriter;
+    /// use core2::io::LineWriter;
     ///
     /// fn main() -> core::result::Result<()> {
     ///     let file = File::create("poem.txt")?;
