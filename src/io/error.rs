@@ -152,8 +152,13 @@ pub enum ErrorKind {
     /// read.
     UnexpectedEof,
 
-    /// Unsupported I/O error
-    Unsupported,
+    /// Any I/O error from the standard library that's not part of this list.
+    ///
+    /// Errors that are `Uncategorized` now may move to a different or a new
+    /// [`ErrorKind`] variant in the future. It is not recommended to match
+    /// an error against `Uncategorized`; use a wildcard match (`_`) instead.
+    #[doc(hidden)]
+    Uncategorized,
 }
 
 impl ErrorKind {
@@ -177,7 +182,7 @@ impl ErrorKind {
             ErrorKind::Interrupted => "operation interrupted",
             ErrorKind::Other => "other os error",
             ErrorKind::UnexpectedEof => "unexpected end of file",
-            ErrorKind::Unsupported => "unsupported I/O error",
+            ErrorKind::Uncategorized => "uncategorized",
         }
     }
 }
@@ -217,8 +222,7 @@ impl From<std::io::ErrorKind> for ErrorKind {
             std::io::ErrorKind::Interrupted => ErrorKind::Interrupted,
             std::io::ErrorKind::Other => ErrorKind::Other,
             std::io::ErrorKind::UnexpectedEof => ErrorKind::UnexpectedEof,
-            std::io::ErrorKind::Unsupported => ErrorKind::Unsupported,
-            _ => ErrorKind::Unsupported,
+            _ => ErrorKind::Uncategorized,
         }
     }
 }
