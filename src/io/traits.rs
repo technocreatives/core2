@@ -1,6 +1,87 @@
 use super::error::{Error, ErrorKind, Result};
 use core::{cmp, fmt, slice};
 
+#[cfg(feature = "alloc")]
+pub use alloc::vec::Vec;
+
+#[cfg(feature = "alloc")]
+struct Guard<'a> {
+    buf: &'a mut Vec<u8>,
+    len: usize,
+}
+
+#[cfg(feature = "alloc")]
+impl Drop for Guard<'_> {
+    fn drop(&mut self) {
+        unsafe {
+            self.buf.set_len(self.len);
+        }
+    }
+}
+
+// This uses an adaptive system to extend the vector when it fills. We want to
+// avoid paying to allocate and zero a huge chunk of memory if the reader only
+// has 4 bytes while still making large reads if the reader does have a ton
+// of data to return. Simply tacking on an extra DEFAULT_BUF_SIZE space every
+// time is 4,500 times (!) slower than a default reservation size of 32 if the
+// reader has a very small amount of data to return.
+//
+// Because we're extending the buffer with uninitialized data for trusted
+// readers, we need to make sure to truncate that if any of this panics.
+#[cfg(feature = "alloc")]
+fn read_to_end<R: Read + ?Sized>(r: &mut R, buf: &mut Vec<u8>) -> Result<usize> {
+    read_to_end_with_reservation(r, buf, |_| 32)
+}
+
+#[cfg(feature = "alloc")]
+fn read_to_end_with_reservation<R, F>(
+    r: &mut R,
+    buf: &mut Vec<u8>,
+    mut reservation_size: F,
+) -> Result<usize>
+where
+    R: Read + ?Sized,
+    F: FnMut(&R) -> usize,
+{
+    let start_len = buf.len();
+    let mut g = Guard {
+        len: buf.len(),
+        buf,
+    };
+    loop {
+        if g.len == g.buf.len() {
+            unsafe {
+                // FIXME(danielhenrymantilla): #42788
+                //
+                //   - This creates a (mut) reference to a slice of
+                //     _uninitialized_ integers, which is **undefined behavior**
+                //
+                //   - Only the standard library gets to soundly "ignore" this,
+                //     based on its privileged knowledge of unstable rustc
+                //     internals;
+                g.buf.reserve(reservation_size(r));
+                let capacity = g.buf.capacity();
+                g.buf.set_len(capacity);
+                r.initializer().initialize(&mut g.buf[g.len..]);
+            }
+        }
+
+        let buf = &mut g.buf[g.len..];
+        match r.read(buf) {
+            Ok(0) => return Ok(g.len - start_len),
+            Ok(n) => {
+                // We can't allow bogus values from read. If it is too large, the returned vec could have its length
+                // set past its capacity, or if it overflows the vec could be shortened which could create an invalid
+                // string if this is called via read_to_string.
+                assert!(n <= buf.len());
+                g.len += n;
+            }
+            Err(ref e) if e.kind() == ErrorKind::Interrupted => {}
+            Err(e) => return Err(e),
+        }
+    }
+}
+
 /// The `Read` trait allows for reading bytes from a source.
 ///
 /// Implementors of the `Read` trait are called 'readers'.
@@ -141,6 +222,57 @@ pub trait Read {
     /// }
     /// ```
     fn read(&mut self, buf: &mut [u8]) -> Result<usize>;
+
+    /// Read all bytes until EOF in this source, placing them into `buf`.
+    ///
+    /// All bytes read from this source will be appended to the specified buffer
+    /// `buf`. This function will continuously call [`read()`] to append more data to
+    /// `buf` until [`read()`] returns either [`Ok(0)`] or an error of
+    /// non-[`ErrorKind::Interrupted`] kind.
+    ///
+    /// If successful, this function will return the total number of bytes read.
+    ///
+    /// # Errors
+    ///
+    /// If this function encounters an error of the kind
+    /// [`ErrorKind::Interrupted`] then the error is ignored and the operation
+    /// will continue.
+    ///
+    /// If any other read error is encountered then this function immediately
+    /// returns. Any bytes which have already been read will be appended to
+    /// `buf`.
+    ///
+    /// # Examples
+    ///
+    /// [`File`]s implement `Read`:
+    ///
+    /// [`read()`]: Read::read
+    /// [`Ok(0)`]: Ok
+    /// [`File`]: crate::fs::File
+    ///
+    /// ```no_run
+    /// use std::io;
+    /// use std::io::prelude::*;
+    /// use std::fs::File;
+    ///
+    /// fn main() -> io::Result<()> {
+    ///     let mut f = File::open("foo.txt")?;
+    ///     let mut buffer = Vec::new();
+    ///
+    ///     // read the whole file
+    ///     f.read_to_end(&mut buffer)?;
+    ///     Ok(())
+    /// }
+    /// ```
+    ///
+    /// (See also the [`std::fs::read`] convenience function for reading from a
+    /// file.)
+    ///
+    /// [`std::fs::read`]: crate::fs::read
+    #[cfg(feature = "alloc")]
+    fn read_to_end(&mut self, buf: &mut Vec<u8>) -> Result<usize> {
+        read_to_end(self, buf)
+    }
 
     /// Determines if this `Read`er can work with buffers of uninitialized
     /// memory.
@@ -1199,6 +1331,14 @@ impl<T: Read> Read for Take<T> {
 
     unsafe fn initializer(&self) -> Initializer {
         self.inner.initializer()
+    }
+
+    #[cfg(feature = "alloc")]
+    fn read_to_end(&mut self, buf: &mut Vec<u8>) -> Result<usize> {
+        // Pass in a reservation_size closure that respects the current value
+        // of limit for each read. If we hit the read limit, this prevents the
+        // final zero-byte read from allocating again.
+        read_to_end_with_reservation(self, buf, |self_| cmp::min(self_.limit, 32) as usize)
     }
 }
 
