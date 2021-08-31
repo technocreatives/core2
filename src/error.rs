@@ -11,7 +11,7 @@
 // coherence challenge (e.g., specialization, neg impls, etc) we can
 // reconsider what crate these items belong in.
 
-use core::alloc::LayoutError;
+use core::alloc::LayoutErr;
 
 use core::any::TypeId;
 use core::fmt::{Debug, Display};
@@ -322,7 +322,7 @@ impl<'a> From<Cow<'a, str>> for Box<dyn Error> {
 #[cfg(feature = "nightly")]
 impl Error for ! {}
 
-impl Error for LayoutError {}
+impl Error for LayoutErr {}
 
 #[cfg(feature = "alloc")]
 impl<T: Error> Error for Box<T> {
