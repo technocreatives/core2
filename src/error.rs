@@ -324,6 +324,25 @@ impl Error for ! {}
 
 impl Error for LayoutErr {}
 
+impl Error for core::str::ParseBoolError {}
+
+impl Error for core::str::Utf8Error {}
+
+impl Error for core::num::ParseIntError {}
+
+impl Error for core::num::TryFromIntError {}
+
+impl Error for core::array::TryFromSliceError {}
+
+impl Error for core::num::ParseFloatError {}
+
+#[cfg(feature = "alloc")]
+impl Error for alloc::string::FromUtf8Error {}
+
+#[cfg(feature = "alloc")]
+impl Error for alloc::string::FromUtf16Error {}
+
+
 #[cfg(feature = "alloc")]
 impl<T: Error> Error for Box<T> {
     fn source(&self) -> Option<&(dyn Error + 'static)> {
