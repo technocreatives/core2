@@ -49,17 +49,17 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: test
-          args: --no-default-features
+          args: --tests --no-default-features
       - name: Run tests (std)
         uses: actions-rs/cargo@v1
         with:
           command: test
-          args: --no-default-features --features std
+          args: --tests --no-default-features --features std
       - name: Run tests (alloc)
         uses: actions-rs/cargo@v1
         with:
           command: test
-          args: --no-default-features --features alloc
+          args: --tests --no-default-features --features alloc
   test-msrv:
     runs-on: ${{ matrix.os }}
     strategy:
@@ -78,14 +78,14 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: test
-          args: --no-default-features
+          args: --tests --no-default-features
       - name: Run tests (std)
         uses: actions-rs/cargo@v1
         with:
           command: test
-          args: --no-default-features --features std
+          args: --tests --no-default-features --features std
       - name: Run tests (alloc)
         uses: actions-rs/cargo@v1
         with:
           command: test
-          args: --no-default-features --features alloc
+          args: --tests --no-default-features --features alloc
