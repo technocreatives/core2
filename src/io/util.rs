@@ -1,10 +1,7 @@
-#[cfg(feature = "nightly")]
 use core::mem::MaybeUninit;
 
-#[cfg(feature = "nightly")]
 use crate::io::{ErrorKind, Read, Write};
 
-#[cfg(feature = "nightly")]
 pub fn copy<R: ?Sized, W: ?Sized, const S: usize>(
     reader: &mut R,
     writer: &mut W,
@@ -14,17 +11,6 @@ where
     W: Write,
 {
     let mut buf = MaybeUninit::<[u8; S]>::uninit();
-    // FIXME: #42788
-    //
-    //   - This creates a (mut) reference to a slice of
-    //     _uninitialized_ integers, which is **undefined behavior**
-    //
-    //   - Only the standard library gets to soundly "ignore" this,
-    //     based on its privileged knowledge of unstable rustc
-    //     internals;
-    unsafe {
-        reader.initializer().initialize(buf.assume_init_mut());
-    }
 
     let mut written = 0;
     loop {

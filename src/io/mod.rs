@@ -1,4 +1,3 @@
-#[cfg(feature = "nightly")]
 mod buffered;
 mod cursor;
 mod error;
@@ -19,8 +18,6 @@ pub use std::io::{
 };
 
 // Use this crate's implementation on both std and no_std
-#[cfg(feature = "nightly")]
 pub use buffered::{BufReader, BufWriter, LineWriter};
 
-#[cfg(feature = "nightly")]
 pub use util::copy;

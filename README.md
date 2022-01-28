@@ -2,7 +2,7 @@
 
 [![Actions Status](https://github.com/bbqsrc/core2/workflows/CI/badge.svg)](https://github.com/bbqsrc/core2/actions)
 [![Documentation](https://docs.rs/core2/badge.svg)](https://docs.rs/core2)
-![Minimum Supported Rust Version (MSRV)](https://img.shields.io/badge/rust-v1.47.0+-blue)
+![Minimum Supported Rust Version (MSRV)](https://img.shields.io/badge/rust-v1.55.0+-blue)
 
 Ever wanted a `Cursor` or the `Error` trait in `no_std`? Well now you can have it. A 'fork' of Rust's `std` modules for `no_std` environments, with the added benefit of optionally taking advantage of `alloc`.
 
@@ -29,20 +29,19 @@ use `core2::error::Error` in place of `std::error::Error`.
 
 - **std**: enables `std` pass-throughs for the polyfilled types, but allows accessing the new types
 - **alloc**: enable aspects of the `Read` and `Write` traits that require `alloc` support (WIP)
-- **nightly**: enables **nightly**-only features, such as `BufReader` and `BufWriter` with const generic buffers.
+- **nightly**: enables **nightly**-only features
 
 ### Differences to `std::io`
 
 - No `std::io::Error`, so we have our own copy without any `Os` error functions
 - `IoSlice` and the `*_vectored` family of functions are not implemented.
-- `BufReader` and `BufWriter` have a different signature, as they now use a const generic bounded array for the internal buffer. (Requires **nightly** feature)
+- `BufReader` and `BufWriter` have a different signature, as they now use a const generic bounded array for the internal buffer.
 
 Other than items perhaps being entirely missing or certain functions unavailable on some traits, no function signatures have been changed.
 
 ### Limitations
 
-- Using the buffer types currently requires **nightly** due to the use of const generics.
-- Using `copy` or the buffer types with `std` support currently requires **nightly** due to the `initializer` API.
+- The `Error` implementation for the never type currently requires **nightly**.
 
 ## Where is it used?
 
