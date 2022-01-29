@@ -1,6 +1,6 @@
 [package]
 name = "core2"
-version = "0.3.3"
+version = "0.4.0"
 authors = ["Brendan Molloy <brendan@bbqsrc.net>"]
 description = "The bare essentials of std::io for use in no_std. Alloc support is optional."
 license = "Apache-2.0 OR MIT"
