@@ -808,7 +808,7 @@ impl<'a, W: Write, const S: usize> Write for LineWriterShim<'a, W, S> {
     /// writer, it will also flush the existing buffer if it ends with a
     /// newline, even if the incoming data does not contain any newlines.
     fn write(&mut self, buf: &[u8]) -> Result<usize> {
-        let newline_idx = match memchr::memrchr(b'\n', buf) {
+        let newline_idx = match buf.iter().rev().position(|b| *b == b'\n') {
             // If there are no new newlines (that is, if this write is less than
             // one line), just do a regular buffered write (which may flush if
             // we exceed the inner buffer's size)
@@ -866,7 +866,7 @@ impl<'a, W: Write, const S: usize> Write for LineWriterShim<'a, W, S> {
         } else {
             let scan_area = &buf[flushed..];
             let scan_area = &scan_area[..self.buffer.capacity()];
-            match memchr::memrchr(b'\n', scan_area) {
+            match scan_area.iter().rev().position(|b| *b == b'\n') {
                 Some(newline_idx) => &scan_area[..newline_idx + 1],
                 None => scan_area,
             }
@@ -889,7 +889,7 @@ impl<'a, W: Write, const S: usize> Write for LineWriterShim<'a, W, S> {
     /// writer, it will also flush the existing buffer if it contains any
     /// newlines, even if the incoming data does not contain any newlines.
     fn write_all(&mut self, buf: &[u8]) -> Result<()> {
-        match memchr::memrchr(b'\n', buf) {
+        match buf.iter().rev().position(|b| *b == b'\n') {
             // If there are no new newlines (that is, if this write is less than
             // one line), just do a regular buffered write (which may flush if
             // we exceed the inner buffer's size)
