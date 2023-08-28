@@ -9,7 +9,6 @@ repository = "https://github.com/bbqsrc/core2"
 categories = ["no-std"]
 
 [dependencies]
-memchr = { version = "2", default-features = false }
 
 [features]
 default = ["std"]
